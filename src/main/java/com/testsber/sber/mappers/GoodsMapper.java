@@ -2,37 +2,39 @@ package com.testsber.sber.mappers;
 
 import com.testsber.sber.model.dto.GoodDTO;
 import com.testsber.sber.model.entity.GoodEntity;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
  * Dto/Entity DTO Сдфыы
  * Геттер по запросу по id. Один запрос - один товар
  */
-@Slf4j
-public class GoodsMapper {
 
-    public static GoodDTO toDto(GoodEntity good) {
-        log.info("to Dto Mapping");
-        GoodDTO goodDTO = new GoodDTO();
-        goodDTO.setName(good.getName());
-        goodDTO.setCategory(good.getCategory());
-        goodDTO.setDescription(good.getDescription());
-        goodDTO.setYearOfIssue(good.getYearOfIssue());
-        goodDTO.setPrice(good.getPrice());
-        goodDTO.setId(good.getId());
+@Service
+public class GoodsMapper implements Mapper<GoodEntity, GoodDTO> {
+    @Override
+    public GoodDTO toDto(GoodEntity good) {
+        GoodDTO goodDTO =
+                GoodDTO.builder()
+                        .name(good.getName())
+                        .category(good.getCategory())
+                        .description(good.getDescription())
+                        .yearOfIssue(good.getYearOfIssue())
+                        .price(good.getPrice())
+                        .id(good.getId()).build();
         return goodDTO;
     }
 
-    public static GoodEntity toEntity(GoodDTO goodDTO) {
-        log.info("to Entity Mapping");
-        GoodEntity good = new GoodEntity();
-        good.setName(goodDTO.getName());
-        good.setCategory(goodDTO.getCategory());
-        good.setDescription(goodDTO.getDescription());
-        good.setYearOfIssue(goodDTO.getYearOfIssue());
-        good.setPrice(goodDTO.getPrice());
-        good.setId(goodDTO.getId());
+    @Override
+    public GoodEntity toEntity(GoodDTO goodDTO) {
+        GoodEntity good = GoodEntity.builder()
+                .name(goodDTO.getName())
+                .category(goodDTO.getCategory())
+                .description(goodDTO.getDescription())
+                .yearOfIssue(goodDTO.getYearOfIssue())
+                .price(goodDTO.getPrice())
+                .build();
         return good;
     }
+
 
 }

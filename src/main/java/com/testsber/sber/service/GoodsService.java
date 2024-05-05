@@ -1,31 +1,31 @@
 package com.testsber.sber.service;
 
 
+import com.testsber.sber.mappers.Mapper;
+import com.testsber.sber.model.dto.GoodDTO;
 import com.testsber.sber.model.entity.GoodEntity;
-import com.testsber.sber.repository.EmployeeRepository;
-import jakarta.transaction.Transactional;
+import com.testsber.sber.repository.GoodsRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
-public class EmployeeService {
+public class GoodsService {
 
-    EmployeeRepository employeeRepository;
-
-    EmployeeService(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
+    private final GoodsRepository employeeRepository;
+    private final Mapper<GoodEntity, GoodDTO> mapper;
 
     /**
      * Service save good
      *
-     * @param employeeModel
+     * @param goodDTO
      * @throws Exception
      */
-    public Long saveGood(GoodEntity employeeModel) throws Exception {
+    public GoodDTO saveGood(GoodDTO goodDTO) {
         log.info("Service save good");
-        return employeeRepository.save(employeeModel).getId();
+        return mapper.toDto(employeeRepository.save(mapper.toEntity(goodDTO)));
     }
 
     /**
@@ -34,7 +34,7 @@ public class EmployeeService {
      * @param id
      * @throws Exception
      */
-    public void deleteById(Long id) throws Exception {
+    public void deleteById(Long id) {
         // Todo: Can check existing in database, and delete if exist.
         log.info("Service delete good");
         employeeRepository.deleteById(id);
@@ -46,8 +46,8 @@ public class EmployeeService {
      * @param goodEntity
      * @throws Exception
      */
-    @Transactional
-    public void update(GoodEntity goodEntity) throws Exception {
+
+    public void update(GoodEntity goodEntity) {
         log.info("Service update good");
         employeeRepository.save(goodEntity);
     }
@@ -58,7 +58,7 @@ public class EmployeeService {
      * @param id
      * @throws Exception
      */
-    public GoodEntity getById(Long id) throws Exception {
+    public GoodEntity getById(Long id) {
         log.info("Service getById good");
         return employeeRepository.getReferenceById(id);
     }
