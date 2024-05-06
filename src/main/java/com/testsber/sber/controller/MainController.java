@@ -4,11 +4,16 @@ import com.testsber.sber.mappers.GoodsMapper;
 import com.testsber.sber.model.dto.ErrorDTO;
 import com.testsber.sber.model.dto.GoodDTO;
 import com.testsber.sber.model.dto.ResponseDTO;
+import com.testsber.sber.model.entity.GoodEntity;
 import com.testsber.sber.service.GoodsService;
 import com.testsber.sber.util.Status;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +32,7 @@ import java.util.Objects;
 @RequestMapping("/goods")
 public class MainController {
 
-    private final GoodsService employeeService;
+    private final GoodsService goodsService;
     private final GoodsMapper goodsMapper;
 
     @ExceptionHandler(Exception.class)
@@ -56,7 +61,7 @@ public class MainController {
 
         log.info("Start Post request");
         System.out.println(goodDTO);
-        GoodDTO goodDTOResult = employeeService
+        GoodDTO goodDTOResult = goodsService
                 .saveGood(goodDTO);
 
         ResponseDTO responseDTO = ResponseDTO
@@ -83,7 +88,7 @@ public class MainController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDTO> deleteGood(@PathVariable Long id) {
-        employeeService.deleteById(id);
+        goodsService.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseDTO.builder()
                         .id(id)
@@ -102,11 +107,11 @@ public class MainController {
     public ResponseEntity<ResponseDTO> updateGood(@Valid @RequestBody GoodDTO goodDTO) {
 
         if (Objects.nonNull(goodDTO) && Objects.nonNull(goodDTO.getId())) {
-            var entity = employeeService.getById(goodDTO.getId());
+            var entity = goodsService.getById(goodDTO.getId());
             if (Objects.nonNull(entity)) {
                 var newEntity = goodsMapper.toEntity(goodDTO);
                 newEntity.setId(entity.getId());
-                employeeService.update(newEntity);
+                goodsService.update(newEntity);
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ResponseDTO.builder()
                                 .id(goodDTO.getId())
@@ -128,12 +133,30 @@ public class MainController {
      */
     @GetMapping(value = "/{id}")
     public ResponseEntity<GoodDTO> showGood(@PathVariable Long id) {
-        GoodDTO goodDTO = goodsMapper.toDto(employeeService.getById(id));
+        GoodDTO goodDTO = goodsMapper.toDto(goodsService.getById(id));
         if (Objects.nonNull(goodDTO)) {
             return ResponseEntity.ok(goodDTO);
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /**
+     * Запрос на все с пагинацией.
+     * В задании не требуется, но.
+     * Пример запроса:
+     * "http://0.0.0.0:8080/goods/all?page=3"
+     *
+     * @param page
+     * @return результат выполнения
+     */
+    @GetMapping(value = "/all",
+            params = "page")
+    public ResponseEntity<Page> showAll(@RequestParam(value = "page", required = true) Integer page) {
+        Pageable pageable = PageRequest.of(page, 5, Sort.by("id"));
+        Page<GoodEntity> goodsPage = goodsService.findAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(goodsPage);
     }
 
 

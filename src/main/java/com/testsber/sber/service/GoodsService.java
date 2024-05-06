@@ -7,14 +7,18 @@ import com.testsber.sber.model.entity.GoodEntity;
 import com.testsber.sber.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class GoodsService {
 
-    private final GoodsRepository employeeRepository;
+    private final GoodsRepository goodsRepository;
     private final Mapper<GoodEntity, GoodDTO> mapper;
 
     /**
@@ -25,7 +29,7 @@ public class GoodsService {
      */
     public GoodDTO saveGood(GoodDTO goodDTO) {
         log.info("Service save good");
-        return mapper.toDto(employeeRepository.save(mapper.toEntity(goodDTO)));
+        return mapper.toDto(goodsRepository.save(mapper.toEntity(goodDTO)));
     }
 
     /**
@@ -37,7 +41,7 @@ public class GoodsService {
     public void deleteById(Long id) {
         // Todo: Can check existing in database, and delete if exist.
         log.info("Service delete good");
-        employeeRepository.deleteById(id);
+        goodsRepository.deleteById(id);
     }
 
     /**
@@ -49,7 +53,7 @@ public class GoodsService {
 
     public void update(GoodEntity goodEntity) {
         log.info("Service update good");
-        employeeRepository.save(goodEntity);
+        goodsRepository.save(goodEntity);
     }
 
     /**
@@ -60,7 +64,13 @@ public class GoodsService {
      */
     public GoodEntity getById(Long id) {
         log.info("Service getById good");
-        return employeeRepository.getReferenceById(id);
+        return goodsRepository.getReferenceById(id);
     }
+
+    public Page<GoodEntity> findAll(Pageable pageable) {
+        log.info("Service getById good");
+        return goodsRepository.findAll(pageable);
+    }
+
 
 }
